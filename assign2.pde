@@ -37,7 +37,7 @@ boolean leftPressed  = false;
 boolean rightPressed = false;
 
 int hpState = FULL;
-int gameState = GAME_START;
+int gameState ;
 
 void setup () {
   // background
@@ -130,8 +130,9 @@ void draw() {
           // click
           gameState = GAME_RUN;
         }
-         break;
     }
+         break;
+    
     case GAME_RUN:
     // background
     image( bg2, x1, 0 );
@@ -167,11 +168,6 @@ void draw() {
         enemyY = 420;}
        if( enemyY < 60){ 
         enemyY = 60;}
-      // hp
-      fill(#ff0000);
-      rectMode(CORNERS);
-      rect(10,0,hpX,30);
-      image(hp,5,0);
       // treasure
       image(treasure,treasureX,treasureY);
       // fighter
@@ -203,11 +199,16 @@ void draw() {
         if (fighterY < 0){
            fighterY = 0;
         }
-      break;
+      // hp
+      fill(#ff0000);
+      rectMode(CORNERS);
+      rect(10,0,hpX,30);
+      image(hp,5,0);
+     break;
   
 
     case GAME_LOSE:
-      image(end2, x1, 0 );
+      image(end2, 0, 0 );
     //mouse action
     if (444 > mouseX && mouseX > 213 && 352 > mouseY && mouseY > 309   ){ 
       image(end1,0,0);
