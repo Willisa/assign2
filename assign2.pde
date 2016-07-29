@@ -166,8 +166,8 @@ void draw() {
       //boundary detection(enemy)
        if( enemyY > 420){
         enemyY = 420;}
-       if( enemyY < 60){ 
-        enemyY = 60;}
+       if( enemyY < 0){ 
+        enemyY = 0;}
       // treasure
       image(treasure,treasureX,treasureY);
       // fighter
