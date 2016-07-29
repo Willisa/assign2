@@ -1,6 +1,13 @@
+
+//GAMESTATES
 final int GAME_START    = 0;
 final int GAME_RUN      = 1;
-final int GAME_LOSE     = 2;
+final int GAME_LOSE     = 2; 
+
+//hpX control
+final int FULL      = 1;
+final int NOT_FULL  = 2;
+final int EMPTY     = 0;
 
 PImage enemy ;
 PImage fighter ;
@@ -15,36 +22,29 @@ PImage gainbomb;
 PImage start1;
 PImage start2;
 float enemyX, enemyY; 
+float enemyXSpeed, enemyYSpeed; 
 float treasureX, treasureY;
 float fighterX, fighterY;
-float speedX,speedY;
+float fighterSpeed;
+float hpX;
 
 int width, height;
 int x1, x2;
 
-float x;
-float y;
-float speed = 5;
-
-boolean upPressed = false;
-boolean downPressed = false;
-boolean leftPressed = false;
+boolean upPressed    = false;
+boolean downPressed  = false;
+boolean leftPressed  = false;
 boolean rightPressed = false;
 
-final int TOTAL_LIFE = 5;
-int life;
-float hpX ;
-
-int gameState;
-
+int gameState =GAME_START; 
+int hpState = FULL;
 void setup () {
+  // background
   width = 640;
   height = 480;
   size(640,480);
   x1 = 0;
   x2 = -width;
-   x = width/2;
-   y = height/2;
   //  load images
   bg1 = loadImage("img/bg1.png");
   bg2 = loadImage("img/bg2.png");
@@ -59,35 +59,76 @@ void setup () {
   start1 = loadImage("img/start1.png");;
   start2 = loadImage("img/start2.png");;
   
+  image(enemy, fighterX,fighterY);
+  fighterX = 580;
+  fighterY = floor(random(60,420));;
+  fighterSpeed = 5;
   image(enemy,enemyX,enemyY);
+  enemyX = 0;
   enemyY = floor(random(60,420));
-  speedX = floor(random(3,6));
-  speedY = floor(random(3,6));
+  enemyXSpeed = 5;
+  enemyYSpeed = 5;
   image(treasure,treasureX,treasureY);
   treasureX = floor(random(60,580));
   treasureY = floor(random(60,420));
-  hpX = 206; 
-  life = TOTAL_LIFE;
-  gameState = GAME_START;
+  hpX = 42; 
+
 }
 
 void draw() {
+   // enemy and fighter touch
+   if(enemyX - 25 <= fighterX + 20  &&  fighterX + 20 <= enemyX+55  &&
+      enemyY - 25 <= fighterY + 20  &&  fighterY + 20 <= enemyY+55){
+       enemyX = 0;  
+       enemyY = random(60,480);  
+       hpX-=210 * 20 /100;
+    }
+   //hp control
+  if(0 < hpX  &&  hpX < 210){
+    hpState = NOT_FULL;
+    }
+  if(hpX >= 210){
+    hpX = 210;
+    hpState = FULL;
+    }
+  if(hpX <= 0){
+    hpState = EMPTY;
+    }
+  switch(hpState){    
+      case FULL:
+        if( treasureX - 20 <= fighterX + 20  && fighterX + 20 <= treasureX + 55  &&
+            treasureY - 25 <= fighterY + 20  && fighterY + 20 <= treasureY + 55){
+          treasureX = random(60,580); 
+          treasureY = random(60,420);
+        }
+        break;
+      
+      case NOT_FULL:
+        if(treasureX - 20 <= fighterX + 20  &&  fighterX + 20 <= treasureX + 55  &&
+           treasureY - 20 <= fighterY + 20  &&  fighterY + 20 <= treasureY + 55){
+         hpX += 210 * 10 / 100;
+         treasureX=random(60,580); 
+         treasureY=random(60,420);
+        }
+        break;
+      
+      case EMPTY:
+        gameState=GAME_LOSE;
+        break;
+  }
+  
   switch (gameState){
     case GAME_START:
     image(start2, 0, 0 );
     //mouse action
-    if (444 > mouseX && mouseX > 213 &&  420 > mouseY && mouseY > 381){ 
+    if (444 >= mouseX && mouseX >= 213 &&  420 >= mouseY && mouseY >= 381){ 
+      image(start1,0,0);
     if (mousePressed){
           // click
           gameState = GAME_RUN;
-        }else{
-          // hover
-          noStroke();
-          image(start1, x1, 0 );
         }
+         break;
     }
-      break;
-      
     case GAME_RUN:
     // background
     image( bg2, x1, 0 );
@@ -101,55 +142,53 @@ void draw() {
       x2 = -width;
     else
     x2 += 2;
-      // fighter
-      image(fighter, x, y);
-      fighterX = mouseX;
       // enemy 
       image(enemy, enemyX, enemyY);
-      //boundary detection
-      if (enemyX > width){
-        enemyX = 0; 
+      //boundary detection(enemy)
+      if (enemyY > fighterY){
+        enemyY -= enemyYSpeed; 
         }
   
-      if (enemyY > height){
-        enemyY = floor(random(0,480));
+      if (enemyY < fighterY){
+        enemyY += enemyYSpeed;
         }
-      enemyX += speedX;
-      enemyY += speedY;
-      enemyX %= 640;
+      enemyX += enemyXSpeed;
+      enemyY += enemyYSpeed;
       // hp
       fill(#ff0000);
       rectMode(CORNERS);
       rect(10,0,hpX,30);
-      image(hp,0,0);
+      image(hp,5,0);
       // treasure
       image(treasure,treasureX,treasureY);
-      // move fighter
+      // fighter
+      image(fighter,fighterX,fighterY);
+      // move fighter 
        if (upPressed) {
-          y -= speed;
+          fighterY -= fighterSpeed;
         }
        if (downPressed) {
-          y += speed;
+          fighterY += fighterSpeed;
         }
         if (leftPressed) {
-          x -= speed;
+          fighterX -= fighterSpeed;
         }
         if (rightPressed) {
-          x += speed;
+          fighterX += fighterSpeed;
         }
      //move fighter(boundary detection)
-        if (x > width-50){
-          x = width-50; 
+        if (fighterX > width-50){
+          fighterX = width-50; 
         }
-        if (x < 0){
-           x = 0; 
+        if (fighterX < 0){
+           fighterX = 0; 
         }
   
-        if (y > height-50){
-           y = height-50;
+        if (fighterY > height-50){
+           fighterY = height-50;
         }
-        if (y < 0){
-           y = 0;
+        if (fighterY < 0){
+           fighterY = 0;
         }
       //move enemy
       if (enemyY >= fighterY ){
@@ -159,21 +198,6 @@ void draw() {
         if (enemyY <= fighterY ){
         enemyX ++;
         enemyY += 2;
-      }
-      //hit detection(treasure)
-     while (treasureX == fighterX && treasureY == fighterY ){
-       hpX =hpX + 20.6 ;
-       println("life: " + hpX);
-      }
-      //hit detection(enemy)
-     if(enemyX >= fighterX){
-     while (enemyX == fighterX && enemyY == fighterY){
-       hpX= hpX - 41.2 ;
-       println("life: " + hpX);
-     }
-       if(hpX<=0){
-         gameState = GAME_LOSE;
-       }
       }     
     }
       break;
@@ -182,18 +206,24 @@ void draw() {
     case GAME_LOSE:
       image(end2, x1, 0 );
     //mouse action
-    if (426 > mouseX && mouseX > 213 && 352 >mouseY && mouseY > 313   ){ 
+    if (426 > mouseX && mouseX > 213 && 352 > mouseY && mouseY > 313   ){ 
+      image(end1,0,0);
     if (mousePressed){
           // click
           gameState = GAME_RUN;
-        }else{
-          // hover
-          noStroke();
-          image(end1, x1, 0 );
-        }
-      }
+          hpState = FULL;
+          
+          fighterX = 580;
+          fighterY = floor(random(60,420));
+          fighterSpeed = 5;
+          enemyX = 0;
+          treasureX = random(60,580);
+          treasureY = random(60,420);
+          hpX = 82.4;
+         }
+       }
       break;
-      }
+     }
   }
 
 void keyPressed(){
