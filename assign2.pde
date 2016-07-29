@@ -2,7 +2,7 @@
 //GAMESTATES
 final int GAME_START    = 0;
 final int GAME_RUN      = 1;
-final int GAME_LOSE     = 2; 
+final int GAME_LOSE     = 2;
 
 //hpX control
 final int FULL      = 1;
@@ -36,8 +36,9 @@ boolean downPressed  = false;
 boolean leftPressed  = false;
 boolean rightPressed = false;
 
-int gameState =GAME_START; 
 int hpState = FULL;
+int gameState = GAME_START;
+
 void setup () {
   // background
   width = 640;
@@ -52,27 +53,28 @@ void setup () {
   fighter = loadImage("img/fighter.png");
   hp = loadImage("img/hp.png");
   treasure = loadImage("img/treasure.png");
-  end1 = loadImage("img/end1.png");;
-  end2 = loadImage("img/end2.png");;
-  enemy1 = loadImage("img/Moocs-element-enemy1.png");;
-  gainbomb = loadImage("img/Moocs-element-gainbomb.png");;
-  start1 = loadImage("img/start1.png");;
-  start2 = loadImage("img/start2.png");;
+  end1 = loadImage("img/end1.png");
+  end2 = loadImage("img/end2.png");
+  enemy1 = loadImage("img/Moocs-element-enemy1.png");
+  gainbomb = loadImage("img/Moocs-element-gainbomb.png");
+  start1 = loadImage("img/start1.png");
+  start2 = loadImage("img/start2.png");
   
-  image(enemy, fighterX,fighterY);
+  image(fighter, fighterX,  fighterY);
   fighterX = 580;
-  fighterY = floor(random(60,420));;
+  fighterY = floor(random(60,420));
   fighterSpeed = 5;
-  image(enemy,enemyX,enemyY);
+  image( enemy, enemyX, enemyY);
   enemyX = 0;
   enemyY = floor(random(60,420));
   enemyXSpeed = 5;
-  enemyYSpeed = 5;
-  image(treasure,treasureX,treasureY);
+  enemyYSpeed = 3;
+  image(treasure, treasureX,  treasureY);
   treasureX = floor(random(60,580));
   treasureY = floor(random(60,420));
+  image(hp, hpX, 0);
   hpX = 42; 
-
+  gameState = GAME_START;
 }
 
 void draw() {
@@ -81,7 +83,7 @@ void draw() {
       enemyY - 25 <= fighterY + 20  &&  fighterY + 20 <= enemyY+55){
        enemyX = 0;  
        enemyY = random(60,480);  
-       hpX-=210 * 20 /100;
+       hpX -= 210 * 20 /100;
     }
    //hp control
   if(0 < hpX  &&  hpX < 210){
@@ -94,6 +96,7 @@ void draw() {
   if(hpX <= 0){
     hpState = EMPTY;
     }
+  
   switch(hpState){    
       case FULL:
         if( treasureX - 20 <= fighterX + 20  && fighterX + 20 <= treasureX + 55  &&
@@ -122,7 +125,7 @@ void draw() {
     image(start2, 0, 0 );
     //mouse action
     if (444 >= mouseX && mouseX >= 213 &&  420 >= mouseY && mouseY >= 381){ 
-      image(start1,0,0);
+      image(start1, 0, 0);
     if (mousePressed){
           // click
           gameState = GAME_RUN;
@@ -144,16 +147,26 @@ void draw() {
     x2 += 2;
       // enemy 
       image(enemy, enemyX, enemyY);
-      //boundary detection(enemy)
+      enemyX += enemyXSpeed;
+      enemyY += enemyYSpeed;
+      //move enemy
+      if(enemyX >= 640){
+        enemyX = 0;
+        enemyY = random(0,420);
+        }
+  
       if (enemyY > fighterY){
         enemyY -= enemyYSpeed; 
         }
-  
       if (enemyY < fighterY){
         enemyY += enemyYSpeed;
-        }
-      enemyX += enemyXSpeed;
-      enemyY += enemyYSpeed;
+        }  
+       
+      //boundary detection(enemy)
+       if( enemyY > 420){
+        enemyY = 420;}
+       if( enemyY < 60){ 
+        enemyY = 60;}
       // hp
       fill(#ff0000);
       rectMode(CORNERS);
@@ -190,23 +203,13 @@ void draw() {
         if (fighterY < 0){
            fighterY = 0;
         }
-      //move enemy
-      if (enemyY >= fighterY ){
-        enemyX ++; 
-        enemyY -= 2;
-      }else{
-        if (enemyY <= fighterY ){
-        enemyX ++;
-        enemyY += 2;
-      }     
-    }
       break;
   
 
     case GAME_LOSE:
       image(end2, x1, 0 );
     //mouse action
-    if (426 > mouseX && mouseX > 213 && 352 > mouseY && mouseY > 313   ){ 
+    if (444 > mouseX && mouseX > 213 && 352 > mouseY && mouseY > 309   ){ 
       image(end1,0,0);
     if (mousePressed){
           // click
@@ -219,7 +222,7 @@ void draw() {
           enemyX = 0;
           treasureX = random(60,580);
           treasureY = random(60,420);
-          hpX = 82.4;
+          hpX = 42;
          }
        }
       break;
