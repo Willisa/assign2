@@ -155,13 +155,13 @@ void draw() {
         enemyX = 0;
         enemyY = random(0,420);
         }
-  
       if (enemyY > fighterY){
         enemyY -= enemyYSpeed; 
         }
       if (enemyY < fighterY){
         enemyY += enemyYSpeed;
         }  
+      
        
       //boundary detection(enemy)
        if( enemyY > 420){
@@ -179,6 +179,12 @@ void draw() {
        if (downPressed) {
           fighterY += fighterSpeed;
         }
+        if (enemyY > fighterY){
+        enemyY -= enemyYSpeed; 
+        }
+      if (enemyY < fighterY){
+        enemyY += enemyYSpeed;
+        }  
         if (leftPressed) {
           fighterX -= fighterSpeed;
         }
